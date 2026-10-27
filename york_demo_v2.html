@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPD Web Developer – Osgoode Professional Development</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #c8102e;
+  --red-dark: #a00d24;
+  --red-light: #fdf0f2;
+  --gold: #f0b418;
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --surface2: #f8f8f8;
+  --border: #e0e0e0;
+  --text: #1a1a1a;
+  --text2: #555;
+  --text3: #888;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --blue: #1d4ed8;
+  --blue-bg: #eff6ff;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 14px; display: flex; height: 100vh; overflow: hidden; }
+
+/* SIDEBAR */
+.sidebar { width: 220px; background: #1a1a2e; color: #ccc; display: flex; flex-direction: column; flex-shrink: 0; }
+.sidebar-brand { padding: 18px 16px 14px; border-bottom: 1px solid #2e2e4a; }
+.sidebar-brand .logo { display: flex; align-items: center; gap: 8px; }
+.sidebar-brand .logo-mark { width: 30px; height: 30px; background: var(--red); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 12px; }
+.sidebar-brand .logo-text { font-size: 13px; font-weight: 600; color: #fff; line-height: 1.2; }
+.sidebar-brand .logo-sub { font-size: 10px; color: #888; }
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
+.nav-section { padding: 10px 16px 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: #555; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; cursor: pointer; color: #aaa; font-size: 13px; transition: all .15s; border-left: 3px solid transparent; }
+.nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+.nav-item.active { background: rgba(200,16,46,.15); color: #fff; border-left-color: var(--red); }
+.nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+.nav-badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 8px; }
+.sidebar-footer { padding: 12px 16px; border-top: 1px solid #2e2e4a; font-size: 11px; color: #555; }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+.topbar h1 { font-size: 15px; font-weight: 600; color: var(--text); }
+.topbar-tags { display: flex; gap: 6px; margin-left: 8px; }
+.tag { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.tag-red { background: var(--red-light); color: var(--red); }
+.tag-green { background: var(--green-bg); color: var(--green); }
+.tag-blue { background: var(--blue-bg); color: var(--blue); }
+.tag-amber { background: var(--amber-bg); color: var(--amber); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.env-badge { font-size: 11px; padding: 3px 10px; background: var(--green-bg); color: var(--green); border-radius: 10px; font-weight: 600; }
+.avatar { width: 30px; height: 30px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 600; }
+.content { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* PAGE visibility */
+.page { display: none; }
+.page.active { display: block; }
+
+/* KPI TILES */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; }
+.kpi-label { font-size: 11px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.kpi-value { font-size: 26px; font-weight: 700; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--text3); margin-top: 5px; }
+.kpi-up { color: var(--green); }
+.kpi-down { color: var(--red); }
+
+/* GRID LAYOUTS */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* CARDS */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 600; }
+.card-body { padding: 16px 18px; }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th { background: var(--surface2); padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
+td { padding: 9px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafafa; }
+
+/* CODE BLOCKS */
+.code-block { background: #0d1117; border-radius: 6px; overflow: hidden; margin: 8px 0; }
+.code-header { background: #161b22; padding: 8px 14px; font-size: 11px; font-weight: 500; color: #8b949e; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #30363d; }
+.code-header .lang-badge { background: #21262d; padding: 1px 7px; border-radius: 4px; font-size: 10px; }
+.code-body { padding: 14px; overflow-x: auto; }
+.code-body pre { font-family: var(--mono); font-size: 12px; line-height: 1.6; color: #e6edf3; white-space: pre; }
+.kw { color: #ff7b72; }
+.fn { color: #d2a8ff; }
+.str { color: #a5d6ff; }
+.cm { color: #8b949e; font-style: italic; }
+.cl { color: #ffa657; }
+.nr { color: #79c0ff; }
+.prop { color: #7ee787; }
+
+/* STATUS DOTS */
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+.dot-green { background: var(--green); }
+.dot-red { background: var(--red); }
+.dot-amber { background: var(--amber); }
+
+/* TABS */
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.tab { padding: 9px 16px; font-size: 13px; cursor: pointer; color: var(--text3); border-bottom: 2px solid transparent; margin-bottom: -1px; font-weight: 500; }
+.tab.active { color: var(--red); border-bottom-color: var(--red); }
+
+/* PROGRESS BAR */
+.progress-row { margin-bottom: 10px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+.progress-track { height: 6px; background: #eee; border-radius: 3px; }
+.progress-fill { height: 6px; border-radius: 3px; }
+
+/* SPRINT BOARD */
+.sprint-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.sprint-col-header { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text3); padding: 8px 10px; border-bottom: 2px solid var(--border); margin-bottom: 8px; }
+.sprint-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; font-size: 12px; }
+.sprint-card-id { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-bottom: 4px; }
+.sprint-card-title { font-weight: 500; color: var(--text); line-height: 1.35; margin-bottom: 6px; }
+.sprint-card-meta { display: flex; gap: 6px; align-items: center; }
+.points-badge { background: var(--surface2); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+.assignee-chip { font-size: 10px; color: var(--text3); }
+
+/* WCAG issue rows */
+.issue-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; align-items: flex-start; }
+.issue-row:last-child { border-bottom: none; }
+.issue-sev { width: 64px; flex-shrink: 0; }
+.issue-body { flex: 1; }
+.issue-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+.issue-desc { font-size: 12px; color: var(--text2); line-height: 1.45; }
+.issue-code { font-family: var(--mono); font-size: 11px; background: #f5f5f5; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-top: 4px; }
+.sev-critical { color: #c00; font-weight: 700; font-size: 11px; }
+.sev-serious { color: var(--amber); font-weight: 700; font-size: 11px; }
+.sev-moderate { color: var(--blue); font-weight: 600; font-size: 11px; }
+
+/* WIREFRAME MOCKUP */
+.wireframe { background: #f9fafb; border: 2px dashed #ccc; border-radius: 6px; padding: 16px; }
+.wf-bar { height: 28px; background: #ddd; border-radius: 3px; margin-bottom: 10px; }
+.wf-hero { height: 60px; background: #e0e0e0; border-radius: 4px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 11px; }
+.wf-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.wf-card { flex: 1; height: 50px; background: #e8e8e8; border-radius: 4px; }
+.wf-text { height: 8px; background: #ddd; border-radius: 3px; margin-bottom: 4px; }
+.wf-label { font-size: 10px; color: #aaa; text-align: center; margin-bottom: 4px; }
+
+/* CMS Panel */
+.cms-tree { font-size: 12.5px; }
+.cms-node { padding: 5px 8px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.cms-node:hover { background: var(--surface2); }
+.cms-indent { padding-left: 20px; }
+.cms-status { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 8px; }
+.cms-published { background: var(--green-bg); color: var(--green); }
+.cms-draft { background: var(--amber-bg); color: var(--amber); }
+.cms-review { background: var(--blue-bg); color: var(--blue); }
+
+/* TIMELINE */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before { content: ''; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 2px; background: var(--border); }
+.tl-item { position: relative; padding-bottom: 14px; }
+.tl-dot { position: absolute; left: -17px; top: 3px; width: 10px; height: 10px; border-radius: 50%; background: var(--border); border: 2px solid white; }
+.tl-dot.done { background: var(--green); }
+.tl-dot.current { background: var(--red); }
+.tl-dot.pending { background: #ccc; }
+.tl-title { font-weight: 600; font-size: 12.5px; }
+.tl-sub { font-size: 11.5px; color: var(--text3); margin-top: 2px; }
+
+/* INTEGRATION HEALTH */
+.integration-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+.integration-row:last-child { border-bottom: none; }
+.int-name { width: 120px; font-weight: 600; font-size: 12.5px; }
+.int-bar { flex: 1; height: 6px; background: #eee; border-radius: 3px; }
+.int-fill { height: 6px; border-radius: 3px; background: var(--green); }
+.int-fill.warn { background: var(--amber); }
+.int-fill.err { background: var(--red); }
+.int-pct { width: 36px; text-align: right; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.int-status { width: 64px; text-align: right; font-size: 11px; }
+
+/* MISC */
+.section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+.mb-16 { margin-bottom: 16px; }
+.mb-20 { margin-bottom: 20px; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+.btn-primary { background: var(--red); color: #fff; }
+.btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+.server-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 4px; font-size: 11px; background: var(--surface2); border: 1px solid var(--border); margin-right: 6px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">
+      <div class="logo-mark">OPD</div>
+      <div>
+        <div class="logo-text">Osgoode PD</div>
+        <div class="logo-sub">YorkU Developer Portal</div>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">Applications</div>
+    <div class="nav-item active" onclick="show('dashboard')"><span class="icon">📊</span> Dashboard</div>
+    <div class="nav-item" onclick="show('registrations')"><span class="icon">📋</span> Registrations</div>
+    <div class="nav-item" onclick="show('salesforce')"><span class="icon">☁️</span> Salesforce EDA</div>
+    <div class="nav-section">Development</div>
+    <div class="nav-item" onclick="show('phpcode')"><span class="icon">🐘</span> PHP / CodeIgniter</div>
+    <div class="nav-item" onclick="show('database')"><span class="icon">🗄️</span> Database Schema</div>
+    <div class="nav-item" onclick="show('phpunit')"><span class="icon">🧪</span> PHPUnit Tests</div>
+    <div class="nav-section">Infrastructure</div>
+    <div class="nav-item" onclick="show('servers')"><span class="icon">🖥️</span> Server Admin</div>
+    <div class="nav-item" onclick="show('security')"><span class="icon">🔒</span> Security Monitor</div>
+    <div class="nav-section">Project & UX</div>
+    <div class="nav-item" onclick="show('sprint')"><span class="icon">🏃</span> Sprint Board <span class="nav-badge">14</span></div>
+    <div class="nav-item" onclick="show('wireframes')"><span class="icon">✏️</span> Wireframes</div>
+    <div class="nav-item" onclick="show('cms')"><span class="icon">📝</span> CMS / Authoring</div>
+    <div class="nav-item" onclick="show('aoda')"><span class="icon">♿</span> AODA Audit</div>
+  </div>
+  <div class="sidebar-footer">YorkU UIT · ITSM Portal</div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="page-title">Dashboard</h1>
+    <div class="topbar-tags">
+      <span class="tag tag-red">OPD Portal</span>
+      <span class="tag tag-green">Production</span>
+    </div>
+    <div class="topbar-right">
+      <span class="env-badge">● All Systems Nominal</span>
+      <div class="avatar">JV</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Active Registrations</div>
+          <div class="kpi-value">1,284</div>
+          <div class="kpi-sub kpi-up">↑ 8.3% vs last term</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Fall Term Revenue</div>
+          <div class="kpi-value">$2.4M</div>
+          <div class="kpi-sub">via Moneris gateway</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Portal Uptime (30d)</div>
+          <div class="kpi-value">99.94%</div>
+          <div class="kpi-sub kpi-up">SLA target: 99.9%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Avg Page Load</div>
+          <div class="kpi-value">1.12s</div>
+          <div class="kpi-sub kpi-down">↑ 110ms (Moodle SSO)</div>
+        </div>
+      </div>
+
+      <div class="grid-2 mb-20">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Integration Health</span>
+            <span class="tag tag-green">6 of 7 healthy</span>
+          </div>
+          <div class="card-body">
+            <div class="integration-row">
+              <div class="int-name">Moodle LMS</div>
+              <div class="int-bar"><div class="int-fill" style="width:98%"></div></div>
+              <div class="int-pct int-green">98%</div>
+              <div class="int-status"><span class="dot dot-green"></span>Healthy</div>
+            </div>
+            <div class="integration-row">
+              <div class="int-name">Moneris</div>
+              <div class="int-bar"><div class="int-fill warn" style="width:72%"></div></div>
+              <div class="int-pct" style="color:var(--amber)">72%</div>
+              <div class="int-status"><span class="dot dot-amber"></span>Degraded</div>
+            </div>
+            <div class="integration-row">
+              <div class="int-name">Salesforce EDA</div>
+              <div class="int-bar"><div class="int-fill" style="width:100%"></div></div>
+              <div class="int-pct int-green">100%</div>
+              <div class="int-status"><span class="dot dot-green"></span>Healthy</div>
+            </div>
+            <div class="integration-row">
+              <div class="int-name">SendGrid</div>
+              <div class="int-bar"><div class="int-fill" style="width:100%"></div></div>
+              <div class="int-pct">100%</div>
+              <div class="int-status"><span class="dot dot-green"></span>Healthy</div>
+            </div>
+            <div class="integration-row">
+              <div class="int-name">GA4 / GTM</div>
+              <div class="int-bar"><div class="int-fill" style="width:96%"></div></div>
+              <div class="int-pct">96%</div>
+              <div class="int-status"><span class="dot dot-green"></span>Healthy</div>
+            </div>
+            <div class="integration-row">
+              <div class="int-name">York UIT SSO</div>
+              <div class="int-bar"><div class="int-fill" style="width:100%"></div></div>
+              <div class="int-pct">100%</div>
+              <div class="int-status"><span class="dot dot-green"></span>Healthy</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent Deploy Log</span></div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot done"></div>
+                <div class="tl-title">feature/moneris-retry → main</div>
+                <div class="tl-sub">Deployed 2026-10-27 09:14 · jv@yorku.ca · Apache reload OK</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot done"></div>
+                <div class="tl-title">hotfix/salesforce-eda-null-contact</div>
+                <div class="tl-sub">2026-10-24 · Fixed Contact__c null pointer in OPD_RegistrationController</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot done"></div>
+                <div class="tl-title">feature/aoda-fixes branch</div>
+                <div class="tl-sub">2026-10-21 · WCAG 2.1 AA — aria-label, skip nav, colour contrast fixes</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot current"></div>
+                <div class="tl-title">feature/doctrine-orm-refactor (in progress)</div>
+                <div class="tl-sub">Migrating raw PDO queries → Doctrine ORM entities · 4 of 9 controllers done</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot pending"></div>
+                <div class="tl-title">opd-dev staging environment (down)</div>
+                <div class="tl-sub">IIS cert renewal pending · UIT ticket #IT-29847 open</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Active Projects — Sprint 14</span>
+          <span class="tag tag-blue">Agile / SCRUM</span>
+        </div>
+        <div class="card-body">
+          <div class="grid-3">
+            <div>
+              <div class="progress-row">
+                <div class="progress-label"><span>Doctrine ORM Refactor</span><span>44%</span></div>
+                <div class="progress-track"><div class="progress-fill" style="width:44%;background:var(--blue)"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label"><span>AODA / WCAG 2.1 Remediation</span><span>80%</span></div>
+                <div class="progress-track"><div class="progress-fill" style="width:80%;background:var(--green)"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label"><span>Moneris Retry Logic</span><span>100%</span></div>
+                <div class="progress-track"><div class="progress-fill" style="width:100%;background:var(--green)"></div></div>
+              </div>
+            </div>
+            <div>
+              <div class="progress-row">
+                <div class="progress-label"><span>Salesforce EDA Sync</span><span>60%</span></div>
+                <div class="progress-track"><div class="progress-fill" style="width:60%;background:var(--gold)"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label"><span>PHPUnit Coverage 80%</span><span>55%</span></div>
+                <div class="progress-track"><div class="progress-fill" style="width:55%;background:var(--amber)"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label"><span>opd-dev IIS Cert Renewal</span><span>10%</span></div>
+                <div class="progress-track"><div class="progress-fill" style="width:10%;background:var(--red)"></div></div>
+              </div>
+            </div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;">
+              <div>🏃 Sprint 14 · 2026-10-20 → 2026-11-03</div>
+              <div>📌 Scrum Master: J. Vasoya</div>
+              <div>👥 Team: Dev × 1, QA × 1, PM × 1</div>
+              <div>📦 Story Points: 42 committed / 38 completed</div>
+              <div>🔥 Burn-down: on track</div>
+              <div style="margin-top:8px;">Velocity avg (last 3): <strong>39 pts/sprint</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTRATIONS -->
+    <div id="page-registrations" class="page">
+      <div class="card mb-16">
+        <div class="card-header">
+          <span class="card-title">Fall 2026 Program Registrations</span>
+          <span class="tag tag-amber">3 Moneris Failures</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Student ID</th><th>Name</th><th>Program</th><th>Term</th><th>Fees</th><th>Payment</th><th>Moodle</th><th>SF Contact</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:var(--mono)">29401882</td><td>Priya Mehta</td><td>Professional LLM</td><td>Fall 2026</td><td>$14,800</td><td><span class="tag tag-green">Captured</span></td><td><span class="tag tag-green">Enrolled</span></td><td><span class="tag tag-green">Synced</span></td></tr>
+              <tr><td style="font-family:var(--mono)">29504312</td><td>James Okonkwo</td><td>Certificate — Business Law</td><td>Fall 2026</td><td>$4,200</td><td><span class="tag tag-amber">Retry #2</span></td><td><span class="tag tag-amber">Pending</span></td><td><span class="tag tag-green">Synced</span></td></tr>
+              <tr><td style="font-family:var(--mono)">29610077</td><td>Sofia Reyes</td><td>Taxation Law</td><td>Fall 2026</td><td>$7,600</td><td><span class="tag tag-green">Captured</span></td><td><span class="tag tag-green">Enrolled</span></td><td><span class="tag tag-green">Synced</span></td></tr>
+              <tr><td style="font-family:var(--mono)">29711450</td><td>Ahmed Hassan</td><td>Certificate — Mediation</td><td>Fall 2026</td><td>$3,100</td><td><span class="tag tag-red">Failed</span></td><td><span class="tag tag-red">Not enrolled</span></td><td><span class="tag tag-amber">Pending</span></td></tr>
+              <tr><td style="font-family:var(--mono)">29803921</td><td>Linda Park</td><td>Professional LLM</td><td>Fall 2026</td><td>$14,800</td><td><span class="tag tag-green">Captured</span></td><td><span class="tag tag-green">Enrolled</span></td><td><span class="tag tag-green">Synced</span></td></tr>
+              <tr><td style="font-family:var(--mono)">29902888</td><td>Marcus Dubé</td><td>Real Estate Law</td><td>Fall 2026</td><td>$5,500</td><td><span class="tag tag-amber">Retry #1</span></td><td><span class="tag tag-amber">Pending</span></td><td><span class="tag tag-green">Synced</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Moneris Retry — PHP Controller Logic</span></div>
+        <div class="card-body">
+          <div class="code-block">
+            <div class="code-header"><span>OPD_RegistrationController.php</span><span class="lang-badge">PHP · CodeIgniter 4</span></div>
+            <div class="code-body"><pre><span class="kw">public function</span> <span class="fn">processPayment</span>(array $registrationData): array
+{
+    <span class="cm">// Moneris eSELECTplus integration — OPD production gateway</span>
+    $gateway = <span class="kw">new</span> <span class="cl">MonerisGateway</span>(
+        store_id:   $_ENV[<span class="str">'MONERIS_STORE_ID'</span>],
+        api_token:  $_ENV[<span class="str">'MONERIS_API_TOKEN'</span>],
+        test_mode:  <span class="kw">false</span>
+    );
+
+    $attempts = <span class="nr">0</span>;
+    $maxRetry  = <span class="nr">3</span>;
+
+    <span class="kw">while</span> ($attempts < $maxRetry) {
+        $result = $gateway-><span class="fn">purchase</span>([
+            <span class="str">'order_id'</span>  => <span class="str">'OPD-'</span> . $registrationData[<span class="str">'student_id'</span>] . <span class="str">'-'</span> . time(),
+            <span class="str">'amount'</span>    => $registrationData[<span class="str">'program_fee'</span>],
+            <span class="str">'pan'</span>       => $registrationData[<span class="str">'card_number'</span>],
+            <span class="str">'expdate'</span>   => $registrationData[<span class="str">'expiry'</span>],
+            <span class="str">'crypt_type'</span>=> <span class="str">'7'</span>,     <span class="cm">// SSL e-commerce</span>
+        ]);
+
+        <span class="kw">if</span> ($result-><span class="fn">getResponseCode</span>() === <span class="str">'00'</span>) {
+            <span class="cm">// Success — trigger Moodle enrollment and Salesforce sync</span>
+            $this-><span class="fn">enrollInMoodle</span>($registrationData[<span class="str">'student_id'</span>]);
+            $this-><span class="fn">syncToSalesforce</span>($registrationData);
+            <span class="kw">return</span> [<span class="str">'status'</span> => <span class="str">'captured'</span>, <span class="str">'txn'</span> => $result-><span class="fn">getTxnNumber</span>()];
+        }
+
+        $attempts++;
+        <span class="fn">sleep</span>(<span class="nr">2</span> ** $attempts); <span class="cm">// exponential back-off: 2s, 4s, 8s</span>
+    }
+
+    <span class="cm">// Log failure, notify admin via SendGrid, flag in dashboard</span>
+    $this->paymentLog-><span class="fn">recordFailure</span>($registrationData, $result);
+    <span class="kw">return</span> [<span class="str">'status'</span> => <span class="str">'failed'</span>, <span class="str">'code'</span> => $result-><span class="fn">getResponseCode</span>()];
+}</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SALESFORCE EDA -->
+    <div id="page-salesforce" class="page">
+      <div class="grid-2 mb-16">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Salesforce Education Data Architecture</span><span class="tag tag-blue">EDA v2.0</span></div>
+          <div class="card-body">
+            <div style="font-size:12.5px;color:var(--text2);margin-bottom:14px;">OPD integrates with the YorkU Salesforce org using the <strong>Education Data Architecture (EDA)</strong> managed package. Custom objects bridge OPD registrations to Salesforce <em>Contact</em>, <em>Program Enrollment</em>, and <em>Account</em> records.</div>
+            <table>
+              <thead><tr><th>EDA Object</th><th>OPD Field</th><th>Direction</th><th>Frequency</th></tr></thead>
+              <tbody>
+                <tr><td>Contact</td><td>student_id, email, name</td><td>→ Upsert</td><td>On registration</td></tr>
+                <tr><td>hed__Program_Enrollment__c</td><td>program_code, term, status</td><td>→ Create/Update</td><td>On status change</td></tr>
+                <tr><td>Account (Household)</td><td>employer, billing address</td><td>→ Upsert</td><td>On registration</td></tr>
+                <tr><td>hed__Course_Enrollment__c</td><td>moodle_course_id, grade</td><td>← Pull</td><td>Nightly batch</td></tr>
+                <tr><td>hed__Address__c</td><td>mailing_address</td><td>→ Upsert</td><td>On update</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">SF REST API — Contact Upsert</span></div>
+          <div class="card-body">
+            <div class="code-block">
+              <div class="code-header"><span>SalesforceEDAService.php</span><span class="lang-badge">PHP</span></div>
+              <div class="code-body"><pre><span class="kw">class</span> <span class="cl">SalesforceEDAService</span>
+{
+    <span class="kw">private string</span> $instanceUrl;
+    <span class="kw">private string</span> $accessToken;
+
+    <span class="kw">public function</span> <span class="fn">upsertContact</span>(array $student): string
+    {
+        <span class="cm">// Upsert by OPD_Student_ID__c (external ID field)</span>
+        $payload = [
+            <span class="str">'FirstName'</span>         => $student[<span class="str">'first_name'</span>],
+            <span class="str">'LastName'</span>          => $student[<span class="str">'last_name'</span>],
+            <span class="str">'Email'</span>             => $student[<span class="str">'email'</span>],
+            <span class="str">'OPD_Student_ID__c'</span> => $student[<span class="str">'student_id'</span>],
+            <span class="str">'hed__Preferred_Email__c'</span> => <span class="str">'Alternate'</span>,
+        ];
+
+        $url = <span class="fn">sprintf</span>(
+            <span class="str">'%s/services/data/v58.0/sobjects/Contact/OPD_Student_ID__c/%s'</span>,
+            $this->instanceUrl,
+            <span class="fn">urlencode</span>($student[<span class="str">'student_id'</span>])
+        );
+
+        $ch = <span class="fn">curl_init</span>($url);
+        <span class="fn">curl_setopt_array</span>($ch, [
+            CURLOPT_CUSTOMREQUEST  => <span class="str">'PATCH'</span>,
+            CURLOPT_POSTFIELDS     => <span class="fn">json_encode</span>($payload),
+            CURLOPT_RETURNTRANSFER => <span class="kw">true</span>,
+            CURLOPT_HTTPHEADER     => [
+                <span class="str">'Authorization: Bearer '</span> . $this->accessToken,
+                <span class="str">'Content-Type: application/json'</span>,
+            ],
+        ]);
+        $response = <span class="fn">curl_exec</span>($ch);
+        <span class="kw">return</span> <span class="fn">json_decode</span>($response)-><span class="prop">id</span>;
+    }
+}</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">EDA Sync Log — Last 24 Hours</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Timestamp</th><th>Operation</th><th>EDA Object</th><th>Record</th><th>Result</th><th>HTTP</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:var(--mono);font-size:11px">2026-10-27 09:22:11</td><td>PATCH Contact upsert</td><td>Contact / OPD_Student_ID__c</td><td>29401882</td><td><span class="tag tag-green">200 OK</span></td><td>204</td></tr>
+              <tr><td style="font-family:var(--mono);font-size:11px">2026-10-27 09:22:12</td><td>POST Program Enrollment</td><td>hed__Program_Enrollment__c</td><td>Professional LLM</td><td><span class="tag tag-green">Created</span></td><td>201</td></tr>
+              <tr><td style="font-family:var(--mono);font-size:11px">2026-10-27 06:00:00</td><td>Batch pull grades</td><td>hed__Course_Enrollment__c</td><td>48 records</td><td><span class="tag tag-green">Synced</span></td><td>200</td></tr>
+              <tr><td style="font-family:var(--mono);font-size:11px">2026-10-26 14:07:33</td><td>PATCH Contact upsert</td><td>Contact / OPD_Student_ID__c</td><td>29711450</td><td><span class="tag tag-amber">Null Contact__c</span></td><td>400</td></tr>
+              <tr><td style="font-family:var(--mono);font-size:11px">2026-10-26 14:07:34</td><td>Retry after null fix</td><td>Contact / OPD_Student_ID__c</td><td>29711450</td><td><span class="tag tag-green">200 OK</span></td><td>204</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHP CODE -->
+    <div id="page-phpcode" class="page">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(this,'php-ci')">CodeIgniter Controller</div>
+        <div class="tab" onclick="switchTab(this,'php-doctrine')">Doctrine ORM Entity</div>
+        <div class="tab" onclick="switchTab(this,'php-model')">CI4 Model</div>
+      </div>
+      <div id="tab-php-ci">
+        <div class="card">
+          <div class="card-header"><span class="card-title">OPD_RegistrationController — CodeIgniter 4</span><span class="tag tag-blue">60% of role</span></div>
+          <div class="card-body">
+            <div class="code-block">
+              <div class="code-header"><span>app/Controllers/OPD_RegistrationController.php</span><span class="lang-badge">PHP 8.2 · CI4</span></div>
+              <div class="code-body"><pre><span class="cm">&lt;?php</span>
+<span class="kw">namespace</span> App\Controllers;
+
+<span class="kw">use</span> App\Models\RegistrationModel;
+<span class="kw">use</span> App\Services\SalesforceEDAService;
+<span class="kw">use</span> App\Services\MoodleService;
+<span class="kw">use</span> App\Services\SendGridService;
+<span class="kw">use</span> CodeIgniter\Controller;
+
+<span class="kw">class</span> <span class="cl">OPD_RegistrationController</span> <span class="kw">extends</span> <span class="cl">Controller</span>
+{
+    <span class="kw">protected</span> <span class="cl">RegistrationModel</span>    $model;
+    <span class="kw">protected</span> <span class="cl">SalesforceEDAService</span> $sfService;
+    <span class="kw">protected</span> <span class="cl">MoodleService</span>        $moodle;
+
+    <span class="kw">public function</span> <span class="fn">__construct</span>()
+    {
+        $this->model     = <span class="kw">new</span> <span class="cl">RegistrationModel</span>();
+        $this->sfService = <span class="kw">new</span> <span class="cl">SalesforceEDAService</span>();
+        $this->moodle    = <span class="kw">new</span> <span class="cl">MoodleService</span>();
+        helper([<span class="str">'form'</span>, <span class="str">'url'</span>]);
+    }
+
+    <span class="cm">/**
+     * POST /registration/submit
+     * Validates, stores, triggers payment, Salesforce EDA sync, Moodle enrollment
+     */</span>
+    <span class="kw">public function</span> <span class="fn">submit</span>(): string
+    {
+        $rules = [
+            <span class="str">'student_id'</span>  => <span class="str">'required|numeric|min_length[8]'</span>,
+            <span class="str">'program_code'</span>=> <span class="str">'required|alpha_dash'</span>,
+            <span class="str">'term'</span>        => <span class="str">'required|in_list[Fall,Winter,Spring/Summer]'</span>,
+            <span class="str">'email'</span>       => <span class="str">'required|valid_email'</span>,
+        ];
+
+        <span class="kw">if</span> (! $this->validate($rules)) {
+            <span class="kw">return</span> $this-><span class="fn">response</span>()
+                -><span class="fn">setStatusCode</span>(<span class="nr">422</span>)
+                -><span class="fn">setJSON</span>($this->validator-><span class="fn">getErrors</span>());
+        }
+
+        $data = $this->request-><span class="fn">getPost</span>();
+
+        <span class="cm">// Store in OPD MySQL database</span>
+        $regId = $this->model-><span class="fn">insertRegistration</span>($data);
+
+        <span class="cm">// 1. Process payment via Moneris eSELECTplus</span>
+        $payment = $this-><span class="fn">processPayment</span>($data);
+        <span class="kw">if</span> ($payment[<span class="str">'status'</span>] !== <span class="str">'captured'</span>) {
+            <span class="kw">return</span> $this-><span class="fn">response</span>()-><span class="fn">setJSON</span>([
+                <span class="str">'error'</span> => <span class="str">'Payment declined'</span>, <span class="str">'code'</span> => $payment[<span class="str">'code'</span>]
+            ])-><span class="fn">setStatusCode</span>(<span class="nr">402</span>);
+        }
+
+        <span class="cm">// 2. Upsert Salesforce EDA Contact + Program Enrollment</span>
+        $sfContactId = $this->sfService-><span class="fn">upsertContact</span>($data);
+        $this->sfService-><span class="fn">createProgramEnrollment</span>($sfContactId, $data);
+
+        <span class="cm">// 3. Enroll in Moodle via REST API</span>
+        $this->moodle-><span class="fn">enrollUser</span>($data[<span class="str">'student_id'</span>], $data[<span class="str">'moodle_course_id'</span>]);
+
+        <span class="cm">// 4. Send confirmation via SendGrid transactional template</span>
+        (<span class="kw">new</span> <span class="cl">SendGridService</span>())-><span class="fn">sendConfirmation</span>($data[<span class="str">'email'</span>], $regId);
+
+        <span class="kw">return</span> $this-><span class="fn">response</span>()-><span class="fn">setJSON</span>([
+            <span class="str">'status'</span> => <span class="str">'registered'</span>,
+            <span class="str">'reg_id'</span> => $regId,
+            <span class="str">'txn'</span>    => $payment[<span class="str">'txn'</span>],
+        ]);
+    }
+}</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-php-doctrine" style="display:none">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Registration Entity — Doctrine ORM Refactor</span><span class="tag tag-amber">In progress</span></div>
+          <div class="card-body">
+            <div class="code-block">
+              <div class="code-header"><span>src/Entity/Registration.php</span><span class="lang-badge">PHP 8.2 · Doctrine ORM 3</span></div>
+              <div class="code-body"><pre><span class="kw">namespace</span> OPD\Entity;
+
+<span class="kw">use</span> Doctrine\ORM\Mapping <span class="kw">as</span> ORM;
+<span class="kw">use</span> Doctrine\DBAL\Types\Types;
+
+<span class="fn">#[ORM\Entity(repositoryClass: RegistrationRepository::class)]</span>
+<span class="fn">#[ORM\Table(name: 'opd_registrations')]</span>
+<span class="fn">#[ORM\Index(columns: ['student_id'], name: 'idx_student_id')]</span>
+<span class="fn">#[ORM\Index(columns: ['term', 'status'], name: 'idx_term_status')]</span>
+<span class="kw">class</span> <span class="cl">Registration</span>
+{
+    <span class="fn">#[ORM\Id, ORM\GeneratedValue, ORM\Column(type: Types::INTEGER)]</span>
+    <span class="kw">private</span> ?<span class="kw">int</span> $id = <span class="kw">null</span>;
+
+    <span class="fn">#[ORM\Column(name: 'student_id', type: Types::STRING, length: 20, unique: true)]</span>
+    <span class="kw">private string</span> $studentId;
+
+    <span class="fn">#[ORM\Column(name: 'program_code', type: Types::STRING, length: 40)]</span>
+    <span class="kw">private string</span> $programCode;
+
+    <span class="fn">#[ORM\Column(type: Types::STRING, length: 30)]</span>
+    <span class="kw">private string</span> $term;
+
+    <span class="fn">#[ORM\Column(type: Types::STRING, length: 20, options: ['default' => 'pending'])]</span>
+    <span class="kw">private string</span> $status = <span class="str">'pending'</span>;
+
+    <span class="fn">#[ORM\Column(name: 'payment_status', type: Types::STRING, length: 20)]</span>
+    <span class="kw">private string</span> $paymentStatus = <span class="str">'unpaid'</span>;
+
+    <span class="fn">#[ORM\Column(name: 'moneris_txn', type: Types::STRING, nullable: true)]</span>
+    <span class="kw">private</span> ?<span class="kw">string</span> $monerisTxn = <span class="kw">null</span>;
+
+    <span class="fn">#[ORM\Column(name: 'sf_contact_id', type: Types::STRING, nullable: true)]</span>
+    <span class="kw">private</span> ?<span class="kw">string</span> $sfContactId = <span class="kw">null</span>;
+
+    <span class="fn">#[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]</span>
+    <span class="kw">private</span> \DateTimeImmutable $createdAt;
+
+    <span class="cm">// Getters / setters omitted for brevity — generated via doctrine:generate:entities</span>
+}</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-php-model" style="display:none">
+        <div class="card">
+          <div class="card-header"><span class="card-title">RegistrationModel — CI4 Model with Query Builder</span></div>
+          <div class="card-body">
+            <div class="code-block">
+              <div class="code-header"><span>app/Models/RegistrationModel.php</span><span class="lang-badge">PHP · CI4 Model</span></div>
+              <div class="code-body"><pre><span class="kw">namespace</span> App\Models;
+<span class="kw">use</span> CodeIgniter\Model;
+
+<span class="kw">class</span> <span class="cl">RegistrationModel</span> <span class="kw">extends</span> <span class="cl">Model</span>
+{
+    <span class="kw">protected</span> $table      = <span class="str">'opd_registrations'</span>;
+    <span class="kw">protected</span> $primaryKey = <span class="str">'id'</span>;
+    <span class="kw">protected</span> $allowedFields = [
+        <span class="str">'student_id'</span>, <span class="str">'program_code'</span>, <span class="str">'term'</span>,
+        <span class="str">'email'</span>, <span class="str">'status'</span>, <span class="str">'payment_status'</span>,
+        <span class="str">'moneris_txn'</span>, <span class="str">'sf_contact_id'</span>
+    ];
+    <span class="kw">protected</span> $useTimestamps = <span class="kw">true</span>;
+    <span class="kw">protected</span> $validationRules = [
+        <span class="str">'student_id'</span>   => <span class="str">'required|is_unique[opd_registrations.student_id]'</span>,
+        <span class="str">'program_code'</span> => <span class="str">'required'</span>,
+        <span class="str">'email'</span>        => <span class="str">'required|valid_email'</span>,
+    ];
+
+    <span class="kw">public function</span> <span class="fn">getByTerm</span>(<span class="kw">string</span> $term): array
+    {
+        <span class="kw">return</span> $this->where(<span class="str">'term'</span>, $term)
+                    ->where(<span class="str">'status !='</span>, <span class="str">'cancelled'</span>)
+                    ->orderBy(<span class="str">'created_at'</span>, <span class="str">'DESC'</span>)
+                    ->findAll();
+    }
+}</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATABASE -->
+    <div id="page-database" class="page">
+      <div class="card mb-16">
+        <div class="card-header"><span class="card-title">OPD MySQL 8 Schema — DDL</span><span class="tag tag-blue">Industry Best Practices</span></div>
+        <div class="card-body">
+          <div class="code-block">
+            <div class="code-header"><span>schema/opd_registrations.sql</span><span class="lang-badge">MySQL 8</span></div>
+            <div class="code-body"><pre><span class="cm">-- OPD Portal · MySQL 8.0 · InnoDB engine · utf8mb4</span>
+<span class="cm">-- Designed per UIT database standards</span>
+
+<span class="kw">CREATE TABLE</span> <span class="cl">opd_programs</span> (
+    id            <span class="kw">INT UNSIGNED</span>     <span class="kw">NOT NULL AUTO_INCREMENT</span>,
+    code          <span class="kw">VARCHAR</span>(<span class="nr">40</span>)      <span class="kw">NOT NULL UNIQUE</span>,
+    title         <span class="kw">VARCHAR</span>(<span class="nr">200</span>)     <span class="kw">NOT NULL</span>,
+    term_fee      <span class="kw">DECIMAL</span>(<span class="nr">10</span>,<span class="nr">2</span>)    <span class="kw">NOT NULL</span>,
+    moodle_cid    <span class="kw">INT</span>              <span class="kw">DEFAULT NULL</span>,
+    is_active     <span class="kw">TINYINT</span>(<span class="nr">1</span>)      <span class="kw">NOT NULL DEFAULT</span> <span class="nr">1</span>,
+    <span class="kw">PRIMARY KEY</span> (id),
+    <span class="kw">KEY</span> idx_active_code (is_active, code)
+) <span class="kw">ENGINE</span>=InnoDB <span class="kw">DEFAULT CHARSET</span>=utf8mb4 <span class="kw">COLLATE</span>=utf8mb4_unicode_ci;
+
+<span class="kw">CREATE TABLE</span> <span class="cl">opd_registrations</span> (
+    id             <span class="kw">INT UNSIGNED</span>     <span class="kw">NOT NULL AUTO_INCREMENT</span>,
+    student_id     <span class="kw">VARCHAR</span>(<span class="nr">20</span>)      <span class="kw">NOT NULL</span>,
+    program_id     <span class="kw">INT UNSIGNED</span>     <span class="kw">NOT NULL</span>,
+    term           <span class="kw">ENUM</span>(<span class="str">'Fall'</span>,<span class="str">'Winter'</span>,<span class="str">'Spring/Summer'</span>) <span class="kw">NOT NULL</span>,
+    status         <span class="kw">ENUM</span>(<span class="str">'pending'</span>,<span class="str">'active'</span>,<span class="str">'withdrawn'</span>,<span class="str">'cancelled'</span>) <span class="kw">DEFAULT</span> <span class="str">'pending'</span>,
+    payment_status <span class="kw">ENUM</span>(<span class="str">'unpaid'</span>,<span class="str">'captured'</span>,<span class="str">'failed'</span>,<span class="str">'refunded'</span>) <span class="kw">DEFAULT</span> <span class="str">'unpaid'</span>,
+    moneris_txn    <span class="kw">VARCHAR</span>(<span class="nr">64</span>)      <span class="kw">DEFAULT NULL</span>,
+    sf_contact_id  <span class="kw">VARCHAR</span>(<span class="nr">18</span>)      <span class="kw">DEFAULT NULL</span>  <span class="cm">-- Salesforce 18-char ID</span>,
+    email          <span class="kw">VARCHAR</span>(<span class="nr">254</span>)     <span class="kw">NOT NULL</span>,
+    created_at     <span class="kw">DATETIME</span>         <span class="kw">NOT NULL DEFAULT CURRENT_TIMESTAMP</span>,
+    updated_at     <span class="kw">DATETIME</span>         <span class="kw">NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</span>,
+    <span class="kw">PRIMARY KEY</span>  (id),
+    <span class="kw">UNIQUE KEY</span>   uk_student_term  (student_id, program_id, term),
+    <span class="kw">KEY</span>          idx_term_status  (term, status),
+    <span class="kw">KEY</span>          idx_payment      (payment_status),
+    <span class="kw">FOREIGN KEY</span> (program_id) <span class="kw">REFERENCES</span> opd_programs(id)
+        <span class="kw">ON UPDATE CASCADE ON DELETE RESTRICT</span>
+) <span class="kw">ENGINE</span>=InnoDB <span class="kw">DEFAULT CHARSET</span>=utf8mb4;
+
+<span class="cm">-- Redis cache key pattern (TTL 300s):  opd:reg:{student_id}
+-- Query plan review: EXPLAIN SELECT * FROM opd_registrations WHERE term='Fall' AND status='active';
+-- Index usage verified: idx_term_status (key_len=62, type=ref, rows=~180)</span></pre></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Redis Cache Layer — Session &amp; Query Cache</span></div>
+        <div class="card-body">
+          <div class="code-block">
+            <div class="code-header"><span>app/Services/CacheService.php</span><span class="lang-badge">PHP · Redis</span></div>
+            <div class="code-body"><pre><span class="kw">class</span> <span class="cl">CacheService</span>
+{
+    <span class="kw">private</span> \Redis $redis;
+
+    <span class="kw">public function</span> <span class="fn">getRegistration</span>(<span class="kw">string</span> $studentId): ?array
+    {
+        $key  = <span class="fn">sprintf</span>(<span class="str">'opd:reg:%s'</span>, $studentId);
+        $data = $this->redis-><span class="fn">get</span>($key);
+        <span class="kw">if</span> ($data !== <span class="kw">false</span>) {
+            <span class="kw">return</span> <span class="fn">json_decode</span>($data, <span class="kw">true</span>); <span class="cm">// cache hit</span>
+        }
+        $record = $this->model-><span class="fn">findByStudent</span>($studentId);
+        <span class="kw">if</span> ($record) {
+            $this->redis-><span class="fn">setex</span>($key, <span class="nr">300</span>, <span class="fn">json_encode</span>($record));
+        }
+        <span class="kw">return</span> $record;
+    }
+}</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHPUNIT -->
+    <div id="page-phpunit" class="page">
+      <div class="flex-between mb-16">
+        <div>
+          <div class="section-title">PHPUnit Test Suite — OPD Portal</div>
+          <div style="font-size:12.5px;color:var(--text3)">PHPUnit 10.x · CI4 TestCase · Coverage target: 80%</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span class="tag tag-green">✓ 84 passed</span>
+          <span class="tag tag-red">✗ 3 failed</span>
+          <span class="tag tag-amber">⚠ 5 skipped</span>
+        </div>
+      </div>
+      <div class="grid-2 mb-16">
+        <div class="card">
+          <div class="card-header"><span class="card-title">RegistrationControllerTest</span><span class="tag tag-green">All pass</span></div>
+          <div class="card-body">
+            <div class="code-block">
+              <div class="code-header"><span>tests/Controllers/RegistrationControllerTest.php</span><span class="lang-badge">PHPUnit 10</span></div>
+              <div class="code-body"><pre><span class="kw">class</span> <span class="cl">RegistrationControllerTest</span>
+    <span class="kw">extends</span> <span class="cl">CIUnitTestCase</span>
+{
+    <span class="kw">use</span> <span class="cl">DatabaseTestTrait</span>;
+    <span class="kw">protected</span> $migrate = <span class="kw">true</span>;
+    <span class="kw">protected</span> $seed    = <span class="str">'OPDSeeder'</span>;
+
+    <span class="fn">#[Test]</span>
+    <span class="kw">public function</span> <span class="fn">testValidRegistrationReturns201</span>(): <span class="kw">void</span>
+    {
+        $result = $this-><span class="fn">withBodyFormat</span>(<span class="str">'json'</span>)
+                       -><span class="fn">post</span>(<span class="str">'/registration/submit'</span>, [
+                           <span class="str">'student_id'</span>   => <span class="str">'29999001'</span>,
+                           <span class="str">'program_code'</span> => <span class="str">'PLLM-2026'</span>,
+                           <span class="str">'term'</span>         => <span class="str">'Fall'</span>,
+                           <span class="str">'email'</span>        => <span class="str">'test@yorku.ca'</span>,
+                       ]);
+
+        $result-><span class="fn">assertStatus</span>(<span class="nr">200</span>);
+        $result-><span class="fn">assertJSONFragment</span>([<span class="str">'status'</span> => <span class="str">'registered'</span>]);
+    }
+
+    <span class="fn">#[Test]</span>
+    <span class="kw">public function</span> <span class="fn">testInvalidEmailReturns422</span>(): <span class="kw">void</span>
+    {
+        $result = $this-><span class="fn">post</span>(<span class="str">'/registration/submit'</span>, [
+            <span class="str">'student_id'</span> => <span class="str">'29999002'</span>,
+            <span class="str">'email'</span>      => <span class="str">'not-an-email'</span>,
+        ]);
+        $result-><span class="fn">assertStatus</span>(<span class="nr">422</span>);
+    }
+
+    <span class="fn">#[Test]</span>
+    <span class="kw">public function</span> <span class="fn">testMonerisFailureFlagsDashboard</span>(): <span class="kw">void</span>
+    {
+        <span class="cm">// Mock Moneris to return failure code</span>
+        $mock = $this-><span class="fn">createMock</span>(<span class="cl">MonerisGateway</span>::<span class="kw">class</span>);
+        $mock-><span class="fn">method</span>(<span class="str">'purchase'</span>)
+             -><span class="fn">willReturn</span>((<span class="kw">object</span>)[<span class="str">'response_code'</span> => <span class="str">'481'</span>]);
+
+        $result = $this-><span class="fn">post</span>(<span class="str">'/registration/submit'</span>, [...]);
+        $result-><span class="fn">assertStatus</span>(<span class="nr">402</span>);
+
+        <span class="cm">// Verify payment_status=failed persisted in DB</span>
+        $this-><span class="fn">seeInDatabase</span>(<span class="str">'opd_registrations'</span>, [
+            <span class="str">'payment_status'</span> => <span class="str">'failed'</span>
+        ]);
+    }
+}</pre></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">SalesforceEDAServiceTest</span><span class="tag tag-amber">1 failing</span></div>
+          <div class="card-body">
+            <div class="code-block">
+              <div class="code-header"><span>tests/Services/SalesforceEDAServiceTest.php</span><span class="lang-badge">PHPUnit · Mock</span></div>
+              <div class="code-body"><pre><span class="fn">#[Test]</span>
+<span class="kw">public function</span> <span class="fn">testUpsertContactReturnsSalesforceId</span>(): <span class="kw">void</span>
+{
+    <span class="cm">// Arrange: mock HTTP client</span>
+    $mockHttp = $this-><span class="fn">createMock</span>(<span class="cl">CurlClient</span>::<span class="kw">class</span>);
+    $mockHttp-><span class="fn">method</span>(<span class="str">'patch'</span>)
+              -><span class="fn">willReturn</span>(<span class="str">'{"id":"003Hs00001ABC123AAB"}'</span>);
+
+    $service = <span class="kw">new</span> <span class="cl">SalesforceEDAService</span>($mockHttp);
+    $contactId = $service-><span class="fn">upsertContact</span>([
+        <span class="str">'student_id'</span>  => <span class="str">'29401882'</span>,
+        <span class="str">'first_name'</span>  => <span class="str">'Priya'</span>,
+        <span class="str">'last_name'</span>   => <span class="str">'Mehta'</span>,
+        <span class="str">'email'</span>       => <span class="str">'p.mehta@yorku.ca'</span>,
+    ]);
+
+    <span class="fn">$this</span>-><span class="fn">assertStringStartsWith</span>(<span class="str">'003'</span>, $contactId);
+    <span class="fn">$this</span>-><span class="fn">assertSame</span>(<span class="nr">18</span>, <span class="fn">strlen</span>($contactId));
+}
+
+<span class="cm">// ❌ FAILING: testNullContactThrowsException
+// Expected: SalesforceException
+// Actual:   TypeError — null return on PATCH 400</span></pre></div>
+            </div>
+            <div style="margin-top:10px;background:#fff0f0;border:1px solid #fcc;border-radius:5px;padding:10px;font-size:12px;">
+              <strong style="color:#c00">Failing Test:</strong> <code>testNullContactThrowsException</code><br>
+              <span style="color:#666">OPD_Student_ID__c returns null on 400 — not raising SalesforceException as expected. Fix: add null-check before json_decode in upsertContact(). Tracked: OPD-247.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Coverage Summary — OPD Portal</span></div>
+        <div class="card-body">
+          <div class="grid-3">
+            <div>
+              <div class="progress-row"><div class="progress-label"><span>Controllers</span><span>74%</span></div><div class="progress-track"><div class="progress-fill" style="width:74%;background:var(--amber)"></div></div></div>
+              <div class="progress-row"><div class="progress-label"><span>Models</span><span>88%</span></div><div class="progress-track"><div class="progress-fill" style="width:88%;background:var(--green)"></div></div></div>
+              <div class="progress-row"><div class="progress-label"><span>Services (SF, Moneris)</span><span>61%</span></div><div class="progress-track"><div class="progress-fill" style="width:61%;background:var(--amber)"></div></div></div>
+            </div>
+            <div>
+              <div class="progress-row"><div class="progress-label"><span>Helpers / Utils</span><span>92%</span></div><div class="progress-track"><div class="progress-fill" style="width:92%;background:var(--green)"></div></div></div>
+              <div class="progress-row"><div class="progress-label"><span>Security Layer</span><span>80%</span></div><div class="progress-track"><div class="progress-fill" style="width:80%;background:var(--green)"></div></div></div>
+              <div class="progress-row"><div class="progress-label"><span>Overall</span><span>55%</span></div><div class="progress-track"><div class="progress-fill" style="width:55%;background:var(--amber)"></div></div></div>
+            </div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.8;">
+              <div>🎯 Target: 80% overall</div>
+              <div>📁 84 test files · 286 assertions</div>
+              <div>⏱ Runtime: 4.23s</div>
+              <div>🔧 Runner: PHPUnit 10.4</div>
+              <div>🛠 CI: GitHub Actions · on push</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVER ADMIN -->
+    <div id="page-servers" class="page">
+      <div class="grid-2 mb-16">
+        <div class="card">
+          <div class="card-header"><span class="card-title">opd-web-01 — Apache / Linux</span><span class="tag tag-green">Healthy</span></div>
+          <div class="card-body">
+            <div style="margin-bottom:12px;">
+              <span class="server-chip"><span class="dot dot-green"></span>Apache 2.4.58</span>
+              <span class="server-chip">Ubuntu 22.04 LTS</span>
+              <span class="server-chip">PHP-FPM 8.2</span>
+              <span class="server-chip">certbot / Let's Encrypt</span>
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>/etc/apache2/sites-available/opd-portal.conf</span><span class="lang-badge">Apache VirtualHost</span></div>
+              <div class="code-body"><pre><span class="cm"># OPD Portal — Apache VirtualHost (HTTPS forced)</span>
+&lt;<span class="kw">VirtualHost</span> *:443&gt;
+    ServerName    opd.osgoode.yorku.ca
+    DocumentRoot  /var/www/opd-portal/public
+
+    <span class="cm"># PHP-FPM over Unix socket</span>
+    &lt;<span class="kw">FilesMatch</span> \.php$&gt;
+        SetHandler "proxy:unix:/run/php/php8.2-fpm.sock|fcgi://localhost"
+    &lt;/<span class="kw">FilesMatch</span>&gt;
+
+    &lt;<span class="kw">Directory</span> /var/www/opd-portal/public&gt;
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    &lt;/<span class="kw">Directory</span>&gt;
+
+    <span class="cm"># TLS — managed by certbot</span>
+    SSLEngine on
+    SSLCertificateFile    /etc/letsencrypt/live/opd.osgoode.yorku.ca/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/opd.osgoode.yorku.ca/privkey.pem
+
+    <span class="cm"># Security headers</span>
+    Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+    Header always set X-Frame-Options DENY
+    Header always set X-Content-Type-Options nosniff
+
+    ErrorLog  /var/log/apache2/opd-error.log
+    CustomLog /var/log/apache2/opd-access.log combined
+&lt;/<span class="kw">VirtualHost</span>&gt;</pre></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">opd-portal — IIS / Windows</span><span class="tag tag-amber">Cert expiring</span></div>
+          <div class="card-body">
+            <div style="margin-bottom:12px;">
+              <span class="server-chip"><span class="dot dot-amber"></span>IIS 10.0</span>
+              <span class="server-chip">Windows Server 2022</span>
+              <span class="server-chip">PHP 8.2 CGI</span>
+              <span class="server-chip">UIT ticket #IT-29847</span>
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>web.config (OPD IIS site)</span><span class="lang-badge">IIS / XML</span></div>
+              <div class="code-body"><pre>&lt;?xml version=<span class="str">"1.0"</span>?&gt;
+&lt;<span class="kw">configuration</span>&gt;
+  &lt;<span class="kw">system.webServer</span>&gt;
+    &lt;<span class="kw">rewrite</span>&gt;&lt;<span class="kw">rules</span>&gt;
+      &lt;<span class="kw">rule</span> name=<span class="str">"CI4 Front Controller"</span> stopProcessing=<span class="str">"true"</span>&gt;
+        &lt;<span class="kw">match</span> url=<span class="str">".*"</span> /&gt;
+        &lt;<span class="kw">conditions</span>&gt;
+          &lt;<span class="kw">add</span> input=<span class="str">"{REQUEST_FILENAME}"</span> matchType=<span class="str">"IsFile"</span> negate=<span class="str">"true"</span>/&gt;
+          &lt;<span class="kw">add</span> input=<span class="str">"{REQUEST_FILENAME}"</span> matchType=<span class="str">"IsDirectory"</span> negate=<span class="str">"true"</span>/&gt;
+        &lt;/<span class="kw">conditions</span>&gt;
+        &lt;<span class="kw">action</span> type=<span class="str">"Rewrite"</span> url=<span class="str">"index.php/{R:0}"</span> /&gt;
+      &lt;/<span class="kw">rule</span>&gt;
+    &lt;/<span class="kw">rules</span>&gt;&lt;/<span class="kw">rewrite</span>&gt;
+    &lt;<span class="kw">security</span>&gt;&lt;<span class="kw">requestFiltering</span>&gt;
+      &lt;<span class="kw">hiddenSegments</span>&gt;&lt;<span class="kw">add</span> segment=<span class="str">"app"</span>/&gt;&lt;<span class="kw">add</span> segment=<span class="str">"system"</span>/&gt;&lt;/<span class="kw">hiddenSegments</span>&gt;
+    &lt;/<span class="kw">requestFiltering</span>&gt;&lt;/<span class="kw">security</span>&gt;
+  &lt;/<span class="kw">system.webServer</span>&gt;
+&lt;/<span class="kw">configuration</span>&gt;</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">UFW Firewall Rules — opd-web-01</span></div>
+        <div class="card-body">
+          <div class="code-block">
+            <div class="code-header"><span>ufw status verbose</span><span class="lang-badge">Ubuntu UFW</span></div>
+            <div class="code-body"><pre>Status: active   Logging: on (low)   Default: deny (incoming), allow (outgoing)
+
+To                         Action    From
+--                         ------    ----
+22/tcp (OpenSSH)           ALLOW IN  York UIT VPN (142.204.0.0/16)
+80/tcp (HTTP)              ALLOW IN  Anywhere  <span class="cm"># redirects to 443</span>
+443/tcp (HTTPS)            ALLOW IN  Anywhere
+3306/tcp (MySQL)           ALLOW IN  opd-db-01 (10.10.1.20)
+6379/tcp (Redis)           ALLOW IN  10.10.1.0/24  <span class="cm"># OPD subnet only</span>
+9000/tcp (PHP-FPM)         ALLOW IN  127.0.0.1
+Nginx Full                 ALLOW IN  Anywhere</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECURITY -->
+    <div id="page-security" class="page">
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi"><div class="kpi-label">CVEs Resolved (90d)</div><div class="kpi-value">14</div><div class="kpi-sub kpi-up">0 open critical</div></div>
+        <div class="kpi"><div class="kpi-label">Failed Login Attempts</div><div class="kpi-value">1,203</div><div class="kpi-sub kpi-down">↑ 18% — brute force blocked</div></div>
+        <div class="kpi"><div class="kpi-label">Last OWASP Scan</div><div class="kpi-value">Oct 14</div><div class="kpi-sub">ZAP 2.14 · 0 high-risk</div></div>
+      </div>
+      <div class="card mt-16 mb-16" style="margin-top:16px">
+        <div class="card-header"><span class="card-title">Active Security Monitoring — Threat Feed</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Timestamp</th><th>Type</th><th>Source IP</th><th>Target</th><th>Disposition</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:var(--mono);font-size:11px">2026-10-27 08:44:12</td><td>SQL Injection attempt</td><td>45.33.32.156</td><td>/registration/submit</td><td><span class="tag tag-green">Blocked by WAF</span></td></tr>
+              <tr><td style="font-family:var(--mono);font-size:11px">2026-10-27 07:12:44</td><td>Brute force (SSH)</td><td>192.168.99.3</td><td>opd-web-01:22</td><td><span class="tag tag-green">Banned (fail2ban)</span></td></tr>
+              <tr><td style="font-family:var(--mono);font-size:11px">2026-10-26 22:01:00</td><td>Outdated dep. flagged</td><td>—</td><td>composer.lock (CVE-2024-1)</td><td><span class="tag tag-amber">Patch pending</span></td></tr>
+              <tr><td style="font-family:var(--mono);font-size:11px">2026-10-26 14:30:00</td><td>CSRF token mismatch</td><td>—</td><td>/payment/confirm</td><td><span class="tag tag-green">Rejected (CI4 CSRF)</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Security Hardening — .htaccess + PHP config</span></div>
+        <div class="card-body">
+          <div class="code-block">
+            <div class="code-header"><span>public/.htaccess — OPD CI4 hardening</span><span class="lang-badge">Apache</span></div>
+            <div class="code-body"><pre><span class="cm"># Disable directory browsing — prevent sensitive file exposure</span>
+Options -Indexes
+
+<span class="cm"># Block access to hidden files and directories</span>
+&lt;<span class="kw">FilesMatch</span> "^\.|(~$|\.bak$|\.log$)"&gt;
+    Order allow,deny
+    Deny from all
+&lt;/<span class="kw">FilesMatch</span>&gt;
+
+<span class="cm"># CI4 front controller rewrite</span>
+&lt;<span class="kw">IfModule</span> mod_rewrite.c&gt;
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L]
+&lt;/<span class="kw">IfModule</span>&gt;
+
+<span class="cm"># Prevent access to OPD app/system directories</span>
+RewriteRule ^(app|system|writable|tests)(/.*|$) - [F,L]
+
+<span class="cm"># HSTS preload — forwards to Apache header (15768000s = 6 months)</span>
+Header always set Strict-Transport-Security "max-age=15768000"</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPRINT -->
+    <div id="page-sprint" class="page">
+      <div class="flex-between mb-16">
+        <div><div class="section-title">Sprint 14 — Oct 20 → Nov 3, 2026</div><div style="font-size:12px;color:var(--text3)">42 story pts committed · 38 completed · Scrum Master: J. Vasoya</div></div>
+        <div style="display:flex;gap:8px;">
+          <span class="btn btn-secondary">📊 Burn-down</span>
+          <span class="btn btn-primary">+ New Story</span>
+        </div>
+      </div>
+      <div class="sprint-cols">
+        <div>
+          <div class="sprint-col-header">📋 Backlog</div>
+          <div class="sprint-card"><div class="sprint-card-id">OPD-261</div><div class="sprint-card-title">Implement Doctrine ORM for PaymentLog entity</div><div class="sprint-card-meta"><span class="points-badge">5 pts</span><span class="assignee-chip">JV</span></div></div>
+          <div class="sprint-card"><div class="sprint-card-id">OPD-262</div><div class="sprint-card-title">Add GA4 event tracking for program registration funnel</div><div class="sprint-card-meta"><span class="points-badge">3 pts</span><span class="assignee-chip">JV</span></div></div>
+          <div class="sprint-card"><div class="sprint-card-id">OPD-263</div><div class="sprint-card-title">CMS — update OPD authoring role permissions for Marketing team</div><div class="sprint-card-meta"><span class="points-badge">2 pts</span><span class="assignee-chip">RM</span></div></div>
+        </div>
+        <div>
+          <div class="sprint-col-header">🔧 In Progress</div>
+          <div class="sprint-card" style="border-left:3px solid var(--blue)"><div class="sprint-card-id">OPD-247</div><div class="sprint-card-title">Fix null SalesforceException in SalesforceEDAService::upsertContact()</div><div class="sprint-card-meta"><span class="points-badge">3 pts</span><span class="assignee-chip">JV</span><span class="tag tag-amber" style="font-size:10px;margin-left:auto">Bug</span></div></div>
+          <div class="sprint-card" style="border-left:3px solid var(--blue)"><div class="sprint-card-id">OPD-251</div><div class="sprint-card-title">Doctrine ORM refactor — RegistrationController (4 of 9 done)</div><div class="sprint-card-meta"><span class="points-badge">13 pts</span><span class="assignee-chip">JV</span></div></div>
+          <div class="sprint-card" style="border-left:3px solid var(--blue)"><div class="sprint-card-id">OPD-258</div><div class="sprint-card-title">opd-dev IIS certificate renewal (UIT ticket #IT-29847)</div><div class="sprint-card-meta"><span class="points-badge">2 pts</span><span class="assignee-chip">UIT</span></div></div>
+        </div>
+        <div>
+          <div class="sprint-col-header">👀 Review / QA</div>
+          <div class="sprint-card" style="border-left:3px solid var(--gold)"><div class="sprint-card-id">OPD-254</div><div class="sprint-card-title">AODA skip-nav and aria-label fixes — PR #184</div><div class="sprint-card-meta"><span class="points-badge">5 pts</span><span class="assignee-chip">QA</span><span class="tag tag-blue" style="font-size:10px;margin-left:auto">Accessibility</span></div></div>
+          <div class="sprint-card" style="border-left:3px solid var(--gold)"><div class="sprint-card-id">OPD-255</div><div class="sprint-card-title">PHPUnit coverage for SalesforceEDAService (mock HTTP)</div><div class="sprint-card-meta"><span class="points-badge">5 pts</span><span class="assignee-chip">QA</span></div></div>
+        </div>
+        <div>
+          <div class="sprint-col-header">✅ Done</div>
+          <div class="sprint-card" style="opacity:.7"><div class="sprint-card-id">OPD-243</div><div class="sprint-card-title">Moneris exponential back-off retry logic</div><div class="sprint-card-meta"><span class="points-badge">8 pts</span><span class="tag tag-green" style="font-size:10px">Shipped</span></div></div>
+          <div class="sprint-card" style="opacity:.7"><div class="sprint-card-id">OPD-244</div><div class="sprint-card-title">Redis cache for registration queries (TTL 300s)</div><div class="sprint-card-meta"><span class="points-badge">5 pts</span><span class="tag tag-green" style="font-size:10px">Shipped</span></div></div>
+          <div class="sprint-card" style="opacity:.7"><div class="sprint-card-id">OPD-248</div><div class="sprint-card-title">SendGrid transactional confirmation email template</div><div class="sprint-card-meta"><span class="points-badge">3 pts</span><span class="tag tag-green" style="font-size:10px">Shipped</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WIREFRAMES -->
+    <div id="page-wireframes" class="page">
+      <div style="font-size:12.5px;color:var(--text2);margin-bottom:16px;">Stakeholder wireframes produced for Manager IT &amp; Innovation review prior to development. Created in Balsamiq; exported for OPD Registration, Dashboard, and Moodle integration flows.</div>
+      <div class="grid-3 mb-16">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Registration Form — v1.3</span><span class="tag tag-green">Approved</span></div>
+          <div class="card-body">
+            <div class="wireframe">
+              <div class="wf-label">OPD Registration Portal</div>
+              <div class="wf-bar"></div>
+              <div class="wf-hero">Hero: Program Title + Term</div>
+              <div style="padding:8px 0">
+                <div class="wf-text" style="width:60%"></div>
+                <div class="wf-text" style="width:100%;height:22px;margin-bottom:8px"></div>
+                <div class="wf-text" style="width:60%"></div>
+                <div class="wf-text" style="width:100%;height:22px;margin-bottom:8px"></div>
+                <div class="wf-text" style="width:40%"></div>
+                <div class="wf-text" style="width:60%;height:22px"></div>
+              </div>
+              <div style="margin-top:8px;background:#ccc;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#777">[ Submit Registration + Moneris ]</div>
+            </div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text3)">Annotated: AODA compliant labels, YorkU brand colours, keyboard-navigable</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Admin Dashboard — v2.1</span><span class="tag tag-green">Approved</span></div>
+          <div class="card-body">
+            <div class="wireframe">
+              <div class="wf-label">OPD Admin Dashboard</div>
+              <div class="wf-bar"></div>
+              <div class="wf-row">
+                <div class="wf-card" style="height:36px"></div>
+                <div class="wf-card" style="height:36px"></div>
+                <div class="wf-card" style="height:36px"></div>
+              </div>
+              <div class="wf-row">
+                <div class="wf-card" style="flex:2;height:70px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#aaa">Integration health</div>
+                <div class="wf-card" style="height:70px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#aaa">Deploy log</div>
+              </div>
+              <div class="wf-text" style="width:100%;height:40px;background:#ddd;margin-top:8px"></div>
+            </div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text3)">Reviewed with Manager IT &amp; Osgoode Finance for KPI approval</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Moodle SSO Flow — v1.0</span><span class="tag tag-amber">In Review</span></div>
+          <div class="card-body">
+            <div class="wireframe">
+              <div class="wf-label">Moodle LMS Enrollment Flow</div>
+              <div class="wf-bar"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:8px 0">
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div style="width:80px;height:24px;background:#ddd;border-radius:3px;font-size:10px;display:flex;align-items:center;justify-content:center;color:#999">OPD Portal</div>
+                  <div style="font-size:16px;color:#bbb">→</div>
+                  <div style="width:80px;height:24px;background:#ddd;border-radius:3px;font-size:10px;display:flex;align-items:center;justify-content:center;color:#999">YorkU SSO</div>
+                  <div style="font-size:16px;color:#bbb">→</div>
+                  <div style="width:80px;height:24px;background:#ddd;border-radius:3px;font-size:10px;display:flex;align-items:center;justify-content:center;color:#999">Moodle</div>
+                </div>
+                <div class="wf-text" style="width:100%;height:14px"></div>
+                <div class="wf-text" style="width:80%;height:14px"></div>
+                <div style="height:24px;background:#ccc;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#777">[ Enroll via Moodle REST ]</div>
+              </div>
+            </div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text3)">Pending review by LLM Faculty and Moodle admin</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Wireframe Sign-off Log</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Wireframe</th><th>Version</th><th>Stakeholder</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Registration Form</td><td>v1.3</td><td>Manager IT &amp; Innovation</td><td>2026-10-10</td><td><span class="tag tag-green">Approved</span></td></tr>
+              <tr><td>Admin Dashboard</td><td>v2.1</td><td>Finance / Registrar</td><td>2026-10-12</td><td><span class="tag tag-green">Approved</span></td></tr>
+              <tr><td>Moodle SSO Flow</td><td>v1.0</td><td>LLM Faculty / Moodle Admin</td><td>—</td><td><span class="tag tag-amber">In Review</span></td></tr>
+              <tr><td>Payment Failure UX</td><td>v1.1</td><td>Manager IT &amp; Finance</td><td>2026-10-15</td><td><span class="tag tag-green">Approved</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CMS -->
+    <div id="page-cms" class="page">
+      <div class="grid-2 mb-16">
+        <div class="card">
+          <div class="card-header"><span class="card-title">OPD Content Management System</span><span class="tag tag-blue">Distributed Authoring</span></div>
+          <div class="card-body">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">OPD uses a headless CMS with role-based distributed authoring. The Web Developer configures workflows and permissions; Marketing, Program Lawyers, and LLM Faculty author content within their approved areas per UIT/Communications guidelines.</div>
+            <div class="cms-tree">
+              <div class="cms-node">📁 <strong>opd.osgoode.yorku.ca</strong></div>
+              <div class="cms-indent">
+                <div class="cms-node">📄 Home<span class="cms-status cms-published">Published</span></div>
+                <div class="cms-node">📁 Programs</div>
+                <div class="cms-indent">
+                  <div class="cms-node">📄 Professional LLM<span class="cms-status cms-published">Published</span></div>
+                  <div class="cms-node">📄 Taxation Law<span class="cms-status cms-published">Published</span></div>
+                  <div class="cms-node">📄 Certificate — Mediation<span class="cms-status cms-draft">Draft</span></div>
+                  <div class="cms-node">📄 Real Estate Law<span class="cms-status cms-review">In Review</span></div>
+                </div>
+                <div class="cms-node">📁 Events</div>
+                <div class="cms-indent">
+                  <div class="cms-node">📄 Fall Symposium 2026<span class="cms-status cms-published">Published</span></div>
+                  <div class="cms-node">📄 Networking Night — Dec<span class="cms-status cms-draft">Draft</span></div>
+                </div>
+                <div class="cms-node">📄 Faculty Profiles<span class="cms-status cms-published">Published</span></div>
+                <div class="cms-node">📄 Registration Portal<span class="cms-status cms-published">Published</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Authoring Roles &amp; Permissions</span></div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Role</th><th>Department</th><th>Can Author</th><th>Publish?</th></tr></thead>
+              <tbody>
+                <tr><td>Web Developer</td><td>IT &amp; Innovation</td><td>All content + templates</td><td><span class="tag tag-green">Yes</span></td></tr>
+                <tr><td>Marketing Editor</td><td>Communications</td><td>Programs, Events, News</td><td><span class="tag tag-green">Yes</span></td></tr>
+                <tr><td>Program Lawyer</td><td>LLM Faculty</td><td>Program descriptions</td><td><span class="tag tag-amber">With approval</span></td></tr>
+                <tr><td>Faculty</td><td>Osgoode</td><td>Faculty profiles</td><td><span class="tag tag-amber">With approval</span></td></tr>
+                <tr><td>Admin Staff</td><td>Registration</td><td>Event listings</td><td><span class="tag tag-red">No — review</span></td></tr>
+              </tbody>
+            </table>
+            <div style="margin-top:14px;padding:10px 12px;background:var(--blue-bg);border-radius:5px;font-size:12px;color:var(--text2);">
+              <strong>UIT Compliance Note:</strong> All content changes follow YorkU Communications guidelines. The Web Developer coordinates cross-platform compatibility (desktop, mobile, AODA) and maintains template integrity while supporting distributed authors.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AODA -->
+    <div id="page-aoda" class="page">
+      <div class="flex-between mb-16">
+        <div><div class="section-title">AODA / WCAG 2.1 AA Accessibility Audit</div><div style="font-size:12px;color:var(--text3)">Ontario Accessibility for Ontarians with Disabilities Act · WCAG 2.1 AA · Audited: 2026-10-14</div></div>
+        <div style="display:flex;gap:8px;">
+          <span class="tag tag-red">2 Critical</span>
+          <span class="tag tag-amber">3 Serious</span>
+          <span class="tag tag-blue">4 Moderate</span>
+          <span class="tag tag-green">41 Pass</span>
+        </div>
+      </div>
+      <div class="card mb-16">
+        <div class="card-header"><span class="card-title">Open Issues — OPD Portal</span></div>
+        <div class="card-body">
+          <div class="issue-row">
+            <div class="issue-sev"><span class="sev-critical">● CRITICAL</span></div>
+            <div class="issue-body">
+              <div class="issue-title">Missing form label on Program selector (WCAG 1.3.1 — Info and Relationships)</div>
+              <div class="issue-desc">The program dropdown on /registration/enrol has no associated &lt;label&gt; or aria-labelledby. Screen readers (NVDA/JAWS) do not announce the field purpose. Impacts users relying on assistive technology — violates AODA IASR s.14.</div>
+              <code class="issue-code">&lt;select name="program_code"&gt; — missing &lt;label for&gt; or aria-label</code>
+            </div>
+          </div>
+          <div class="issue-row">
+            <div class="issue-sev"><span class="sev-critical">● CRITICAL</span></div>
+            <div class="issue-body">
+              <div class="issue-title">Colour contrast insufficient on Moneris error state (WCAG 1.4.3 — Contrast Minimum)</div>
+              <div class="issue-desc">Error text on payment failure uses #e06060 on #ffffff — contrast ratio 3.2:1, below the 4.5:1 AA minimum. Low-vision users cannot reliably distinguish the error message. Update to #c0392b for 4.7:1 ratio.</div>
+              <code class="issue-code">color: #e06060 on #fff — 3.2:1 (required ≥ 4.5:1)</code>
+            </div>
+          </div>
+          <div class="issue-row">
+            <div class="issue-sev"><span class="sev-serious">▲ SERIOUS</span></div>
+            <div class="issue-body">
+              <div class="issue-title">Skip navigation link absent (WCAG 2.4.1 — Bypass Blocks)</div>
+              <div class="issue-desc">The OPD portal header lacks a "Skip to main content" link. Keyboard-only users must tab through all navigation items on every page load. Required under AODA IASR for public-facing web content published after 2012.</div>
+              <code class="issue-code">No &lt;a href="#main-content"&gt;Skip to main content&lt;/a&gt; in &lt;header&gt;</code>
+            </div>
+          </div>
+          <div class="issue-row">
+            <div class="issue-sev"><span class="sev-serious">▲ SERIOUS</span></div>
+            <div class="issue-body">
+              <div class="issue-title">Focus indicator removed on registration CTA (WCAG 2.4.7 — Focus Visible)</div>
+              <div class="issue-desc">The "Submit Registration" button has outline:none in CSS with no replacement focus indicator. Keyboard navigation fails — users cannot see which element is active. Add a 2px solid #c8102e focus ring as per YorkU brand guidelines.</div>
+              <code class="issue-code">.btn-submit { outline: none } /* no :focus-visible replacement */</code>
+            </div>
+          </div>
+          <div class="issue-row">
+            <div class="issue-sev"><span class="sev-serious">▲ SERIOUS</span></div>
+            <div class="issue-body">
+              <div class="issue-title">PDF program brochures not tagged (WCAG 1.1.1 — Non-text Content)</div>
+              <div class="issue-desc">Six downloadable PDF brochures linked from program pages have no document structure tags or alt text for images. AODA IASR s.14 requires all published PDFs to be accessible. Remediate using Adobe Acrobat tagging workflow or re-export from source with accessibility checked.</div>
+              <code class="issue-code">/downloads/pllm-2026-brochure.pdf — no doc tags, 4 untagged images</code>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">AODA Compliance Roadmap</span></div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="tl-item"><div class="tl-dot done"></div><div class="tl-title">Initial WCAG 2.1 AA audit complete</div><div class="tl-sub">2026-10-14 — WAVE + axe-core + manual keyboard testing</div></div>
+            <div class="tl-item"><div class="tl-dot done"></div><div class="tl-title">Colour contrast and focus indicator fixes</div><div class="tl-sub">2026-10-21 — PR #184 merged → main · Verified with Colour Contrast Analyser</div></div>
+            <div class="tl-item"><div class="tl-dot current"></div><div class="tl-title">Form label and skip-nav remediation (in progress)</div><div class="tl-sub">OPD-254 — Sprint 14 · Target: 2026-11-01</div></div>
+            <div class="tl-item"><div class="tl-dot pending"></div><div class="tl-title">PDF brochure remediation</div><div class="tl-sub">Planned Sprint 15 · Coordinating with Marketing (6 PDFs)</div></div>
+            <div class="tl-item"><div class="tl-dot pending"></div><div class="tl-title">Full AODA compliance sign-off</div><div class="tl-sub">Target: 2026-11-30 · Report to Manager IT &amp; UIT Accessibility team</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+const titles = {
+  dashboard:'Dashboard',registrations:'Registrations',salesforce:'Salesforce EDA',
+  phpcode:'PHP / CodeIgniter',database:'Database Schema',phpunit:'PHPUnit Tests',
+  servers:'Server Admin',security:'Security Monitor',sprint:'Sprint Board',
+  wireframes:'Wireframes',cms:'CMS / Authoring',aoda:'AODA Audit'
+};
+
+function show(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(n => { if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) n.classList.add('active'); });
+  document.getElementById('page-title').textContent = titles[id] || id;
+}
+
+function switchTab(el, tabId) {
+  const parent = el.closest('.page') || document;
+  parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  // hide all tab content in this page
+  parent.querySelectorAll('[id^="tab-php-"]').forEach(t => t.style.display = 'none');
+  const target = document.getElementById('tab-' + tabId);
+  if (target) target.style.display = '';
+}
+</script>
+</body>
+</html>
